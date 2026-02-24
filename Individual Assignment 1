@@ -1,0 +1,33 @@
+This assignment asks to use the dataset “wine.csv” where “quality” is the outcome/target variable.
+
+Generated the following:
+- scatterplot to explore the relationship between alcohol content and wine density
+- fitted linear regression (partition the data into 75% Training and 25% Validation with a seed of 555)
+
+Code:
+
+library(ggplot2)
+wine.df <- read.csv("wine.csv", stringsAsFactors = TRUE)
+ggplot(data = wine.df) + geom_point(aes(x = alcohol, y = density)) +
+labs(
+title = "Alcohol Content vs. Wine Density",
+x = "Alcohol Content",
+y = "Density"
+)
+
+#partition (75% training, 25% validation)
+set.seed(555)
+train.index <- sample(1:nrow(wine.df), nrow(wine.df) * 0.75)
+train.df <- wine.df[train.index, ]
+valid.df <- wine.df[-train.index, ]
+#linear regression
+wine.lm <- lm(quality ~ ., data = train.df)
+summary(wine.lm)
+
+options(scipen=999, digits = 3)
+library(forecast)
+wine.lm.pred.train <- predict(wine.lm, train.df)
+accuracy(wine.lm.pred.train, train.df$quality)
+
+wine.lm.pred.valid <- predict(wine.lm, valid.df)
+accuracy(wine.lm.pred.valid, valid.df$quality)
